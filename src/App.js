@@ -1,23 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
-
+import logo from "./logo.svg";
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import CardList from "./components/card-list/card-list.component";
+import SearchBox from "./components/search-box/search-box.component";
 function App() {
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then((res) => res.json())
+      .then((data) => setPeople(() => data));
+  }, []);
+
+  //Variables
+  const [people, setPeople] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  // functions
+  const searchHandler = (event) => {
+    setSearchValue(() => event.target.value.toLocaleLowerCase());
+  };
+  const filteredPeople = people.filter((person) =>
+    person.name.toLocaleLowerCase().includes(searchValue)
+  );
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1 className="app-title">People Rolodex</h1>
+      <SearchBox
+        onChangeHandler={searchHandler}
+        placeholder={"Search People"}
+        className={"search-box"}
+      />
+      <CardList filteredPeople={filteredPeople} />
     </div>
   );
 }
